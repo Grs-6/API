@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Book</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+      }
+      form {
+        display: inline-block;
+        margin-top: 20px;
+      }
+      input,
+      button {
+        padding: 10px;
+        margin: 5px;
+      }
+      button {
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: darkred;
+      }
+      .message {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Delete a Book</h1>
+    <form id="deleteBookForm">
+      <input type="number" id="bookId" placeholder="Enter Book ID" required />
+      <button type="submit">Delete Book</button>
+    </form>
+    <p id="message" class="message"></p>
+    <script>
+      document
+        .getElementById("deleteBookForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const bookId = document.getElementById("bookId").value;
+
+          try {
+            const response = await fetch(`/books/${bookId}`, {
+              method: "DELETE",
+            });
+
+            const messageElement = document.getElementById("message");
+
+            if (response.ok) {
+              const data = await response.json();
+              messageElement.textContent = data.message; // Display success message
+              messageElement.classList.remove("error");
+              messageElement.classList.add("message");
+            } else {
+              const error = await response.json();
+              messageElement.textContent =
+                error.message || "An error occurred.";
+              messageElement.classList.remove("message");
+              messageElement.classList.add("error");
+            }
+          } catch (err) {
+            document.getElementById("message").textContent =
+              "Failed to connect to the server.";
+            document.getElementById("message").classList.add("error");
+          }
+
+          // Clear the input field
+          document.getElementById("bookId").value = "";
+        });
+    </script>
+  </body>
+</html>

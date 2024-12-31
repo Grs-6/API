@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Book</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+      }
+      h1 {
+        margin-top: 50px;
+        font-size: 2rem;
+        color: #333;
+      }
+      form {
+        margin-top: 20px;
+      }
+      input,
+      button {
+        padding: 10px;
+        font-size: 1rem;
+        margin: 10px;
+        width: 80%;
+        max-width: 300px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Add a New Book</h1>
+    <form id="addBookForm">
+      <input
+        type="text"
+        id="title"
+        name="title"
+        placeholder="Book Title"
+        required
+      /><br />
+      <input
+        type="text"
+        id="author"
+        name="author"
+        placeholder="Author Name"
+        required
+      /><br />
+      <button type="submit">Add Book</button>
+    </form>
+    <p id="message"></p>
+    <script>
+      document
+        .getElementById("addBookForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const title = document.getElementById("title").value;
+          const author = document.getElementById("author").value;
+
+          try {
+            const response = await fetch("/books", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ title, author }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+              document.getElementById("message").textContent =
+                "Book added successfully!";
+            } else {
+              document.getElementById(
+                "message"
+              ).textContent = `Error adding book: ${result.message}`;
+            }
+          } catch (error) {
+            document.getElementById("message").textContent =
+              "An error occurred. Please try again.";
+            console.error("Error:", error);
+          }
+
+          // Clear the form
+          document.getElementById("addBookForm").reset();
+        });
+    </script>
+  </body>
+</html>

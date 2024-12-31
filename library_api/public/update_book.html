@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Book</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+      }
+      form {
+        display: inline-block;
+        margin-top: 20px;
+      }
+      input,
+      button {
+        padding: 10px;
+        margin: 5px;
+      }
+      button {
+        background-color: blue;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: darkblue;
+      }
+      .message {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Update a Book</h1>
+    <form id="updateBookForm">
+      <input
+        type="number"
+        id="bookId"
+        placeholder="Enter Book ID"
+        required
+      /><br />
+      <input type="text" id="title" placeholder="Enter New Title" /><br />
+      <input type="text" id="author" placeholder="Enter New Author" /><br />
+      <button type="submit">Update Book</button>
+    </form>
+    <p id="message" class="message"></p>
+    <script>
+      document
+        .getElementById("updateBookForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const bookId = document.getElementById("bookId").value;
+          const title = document.getElementById("title").value;
+          const author = document.getElementById("author").value;
+
+          // Create the body object dynamically
+          const body = {};
+          if (title) body.title = title;
+          if (author) body.author = author;
+
+          try {
+            const response = await fetch(`/books/${bookId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+            });
+
+            const messageElement = document.getElementById("message");
+
+            if (response.ok) {
+              const data = await response.json();
+              messageElement.textContent = data.message; // Show success message
+              messageElement.classList.remove("error");
+              messageElement.classList.add("message");
+            } else {
+              const error = await response.json();
+              messageElement.textContent =
+                error.message || "An error occurred.";
+              messageElement.classList.remove("message");
+              messageElement.classList.add("error");
+            }
+          } catch (err) {
+            document.getElementById("message").textContent =
+              "Failed to connect to the server.";
+            document.getElementById("message").classList.add("error");
+          }
+
+          // Clear the input fields
+          document.getElementById("bookId").value = "";
+          document.getElementById("title").value = "";
+          document.getElementById("author").value = "";
+        });
+    </script>
+  </body>
+</html>
